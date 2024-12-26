@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
+    <title>Yield Curve</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="/static/flatpickr/dist/flatpickr.min.css">
+    <script src="/static/flatpickr/dist/flatpickr.js"></script>
+</head>
+<body>
+    <h1>Кривая доходности Кыргызской Республики</h1>
+    <p>Выберите дату:</p>
+    <input type="text" id="calendar" palceholder="Выберите дату">
+
+    <!-- Контейнер для графике -->
+    <div id="graph"></div>
+    <!-- JavaScript для вызова API -->
+    <script>
+        flatpickr("#calendar", {
+            dateFormat: "Y-m-d",
+            enable: [
+                function(date) {
+                    return date.getDay() === 2;
+                }
+            ],
+            onChange: function(selectedDates, dateStr) {
+                if (dateStr) {
+                    fetch(`/yieldcurve/plot/${dateStr}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            Plotly.newPlot('graph', data.data, data.layout);
+                        })
+                        .catch(error => {
+                            console.error("Ошибка при загрузке данных:", error);
+                            document.getElementById('graph').innerText = "Ошибка при загрузке графика.";
+                        });
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
+
