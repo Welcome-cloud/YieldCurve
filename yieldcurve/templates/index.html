@@ -1,5 +1,6 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
@@ -7,37 +8,170 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="/static/flatpickr/dist/flatpickr.min.css">
     <script src="/static/flatpickr/dist/flatpickr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: black;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .bank-name {
+            text-align: right;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .bank-name p {
+            margin: 0;
+        }
+        .logo img {
+            max-width: 60px;
+            height: auto;
+            vertical-align: middle;
+        }
+        .container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+        }
+        .calendar-container p {
+            margin: 0;
+        }
+        .graph-container {
+            flex: 1;
+            margin: 0;
+        }
+        #calendar {
+            width: auto;
+        }
+        #graph {
+            width: 800px;
+            height: 500px;
+        }
+        .controls button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+        .controls button:active {
+            background-color: #003f7f;
+            transform: scale(0.95);
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Кривая доходности Кыргызской Республики</h1>
-    <p>Выберите дату:</p>
-    <input type="text" id="calendar" palceholder="Выберите дату">
+    <header>
+        <div class="header-container">
+            <div class="bank-name">
+                <p>НАЦИОНАЛЬНЫЙ БАНК </p>
+                <p>КЫРГЫЗСКОЙ РЕСПУБЛИКИ</p>
+            </div>
+            <div class="logo">
+                <img src="{%  static 'images/logo.png' %}" alt="Логотип банка">
+            </div>
+        </div>
+    </header>
+    <main>
+        <h2>Кривая доходности финансовой системы Кыргызской Республики</h2>
+        <div class="container">
+            <div class="calendar-container">
+              <p>Выберите дату:</p>
+            <div id="calendar"></div>
+        </div>
+        <div class="graph-container">
+            <div id="graph"></div>
+        </div>
+    </div>
+    <div class="controls">
+        <button onclick="clearGraph()">Очистить график</button>
+    </div>
+    </main>
 
-    <!-- Контейнер для графике -->
-    <div id="graph"></div>
+
     <!-- JavaScript для вызова API -->
     <script>
+        let selectedDates = [];
         flatpickr("#calendar", {
+            locale: "ru",
             dateFormat: "Y-m-d",
+            defaultDate: new Date().toISOString().split('T')[0],
             enable: [
                 function(date) {
                     return date.getDay() === 2;
                 }
             ],
-            onChange: function(selectedDates, dateStr) {
-                if (dateStr) {
-                    fetch(`/yieldcurve/plot/${dateStr}/`)
-                        .then(response => response.json())
-                        .then(data => {
-                            Plotly.newPlot('graph', data.data, data.layout);
-                        })
-                        .catch(error => {
-                            console.error("Ошибка при загрузке данных:", error);
-                            document.getElementById('graph').innerText = "Ошибка при загрузке графика.";
-                        });
+            inline: true,
+            onChange: function(selectedDatesArray, dateStr, instance) {
+                const formattedDate = dateStr.trim();
+                if (!selectedDates.includes(formattedDate)) {
+                    selectedDates.push(formattedDate);
+                    updateGraph();
                 }
             }
-        })
+        });
+        let traces = [];
+
+        function updateGraph() {
+            if (selectedDates.length === 0) {
+                alert("Выберите хотя бы одну дату.");
+                return;
+            }
+            console.log("Отправляем даты:", selectedDates);
+            const params = new URLSearchParams();
+            selectedDates.forEach(date => params.append('dates[]', date));
+            fetch(`/plot/?` + params.toString())
+                  .then(response => response.json())
+                  .then(data => {
+                      console.log("Ответ сервера:", data);
+                      if (data.error) {
+                          alert(data.error);
+                      } else {
+                          traces = [];
+                          traces = data.data;
+                          Plotly.react('graph', traces, data.layout);
+                      }
+                  })
+                  .catch(error => {
+                    console.error("Ошибка при загрузке данных:", error);
+                    document.getElementById('graph').innerText = "Ошибка при загрузке графика.";
+                  });
+        }
+        function clearGraph() {
+            selectedDates = [];
+            traces = [];
+            Plotly.react('graph', traces, {});
+            "document.getElementById('graph').innerHTML = '';"
+        }
 
     </script>
 </body>

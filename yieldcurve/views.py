@@ -3,37 +3,88 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import plotly.graph_objects as go
 from yieldcurve.models import YieldCurve
-from scipy.interpolate import interp1d
+from scipy.interpolate import make_interp_spline
 import numpy as np
 
 def index(request):
-    return render(request, 'index.html')
 
-def yield_curve_by_date(request, selected_date):
-    data = YieldCurve.objects.filter(date=selected_date).order_by('maturity')
-    if not data.exists():
-        return JsonResponse({'error': 'No yieldcurves found'}, status=404)
+    return render(request, "index.html")
 
-    maturities = [entry.maturity for entry in data]
-    yields = [entry.yield_value for entry in data]
+def yield_curve_by_date(request):
+    try:
+        dates = request.GET.getlist('dates[]')
+        if not dates:
+            print("Список дат пустой")
+            return JsonResponse({"error": "Не выбрана ни одна дата"}, status=400)
 
-    maturities_numeric = np.arange(len(maturities))
-    interp = interp1d(maturities_numeric, yields, kind='cubic')
-    smooth_maturities = np.linspace(maturities_numeric.min(), maturities_numeric.max(), 100)
-    smooth_yields = interp(smooth_maturities)
+        print(f"Полученные даты: {dates}")
 
-# Create your views here.
+        #return JsonResponse({"success": "Даты обработаны", "dates": dates})
+    #except Exception as e:
+        #print(f"Ошибка: {e}")
+        #return JsonResponse({"error": str(e)}, status=500)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=maturities, y=yields, mode ='lines+markers', name='Original Points'))
-    fig.add_trace(go.Scatter(x=smooth_maturities, y=smooth_yields, mode='lines', name='Smoothed Curve'))
-    fig.update_layout(
-        title="Кривая доходности на {selected date}",
-        xaxis_title="Maturity",
-        yaxis_title="Yield (%)",
-        template="plotly_white"
-    )
+        fig = go.Figure()
+        for date in dates:
+            try:
+                record = YieldCurve.objects.get(date=date)
+                print(f"Данные для даты {date}: {record}")
+                maturities_in_years = [
+                    1/365, 7/365, 14/365, 28/365, 91/365,
+                    182/365, 1, 2, 3, 5, 7, 10
+                ]
 
-    graph_json = fig.to_plotly_json()
 
-    return JsonResponse(graph_json)
+                yields= [
+                    record.ytm_1d, record.ytm_7d, record.ytm_14d, record.ytm_28d, record.ytm_91d,
+                    record.ytm_182d, record.ytm_12m, record.ytm_2y, record.ytm_3y,
+                    record.ytm_5y, record.ytm_7y, record.ytm_10y,
+                ]
+
+                name_for_legend=f"{str(date)}"
+                print(f"Добавляю график с именем: {name_for_legend}")
+
+                yields =[y if y is not None else 0 for y in yields]
+
+                print(f"Доходности для {date}: {yields}")
+
+   #
+                fig.add_trace(go.Scatter(x=maturities_in_years, y=yields, mode ='lines+markers', name=name_for_legend))
+            except YieldCurve.DoesNotExist:
+                print (f"Данные для даты {date} отсутствуют")
+                continue
+        #fig.add_trace(go.Scatter(x=x_new, y=y_smooth, mode='lines', name='Smoothed Curve'))
+        fig.update_layout(
+            title = {
+                'text': f"Кривая доходности на {date}",
+                'font': {'family': "Arial, sans-serif", 'size': 16, 'color': 'black'},
+                'x': 0.5,
+                'y': 0.85
+            },
+            xaxis_title="Срок до погашения",
+            yaxis_title="Доходность (%)",
+            template="plotly_white",
+            #weidth=700,
+            #height=400,
+            xaxis=dict(
+                tickvals=[
+                    1/365, 7/365, 14/365, 28/365, 91/365,
+                    182/365, 1, 2, 3, 5, 7, 10
+                ],
+                ticktext=[
+                    "1д", " ", " ", " ", "3м",
+                    "6м", "1г", "2г", "3г", "5л", "7л", "10л"
+                ],
+                tickangle=30,
+                tickfont=dict(
+                    family="Arial, sans-serif",
+                    size=12,
+                    color="black"
+                )
+            )
+        )
+
+        return JsonResponse(fig.to_plotly_json(), safe=False)
+    except Exception as e:
+        print(f"Ошибка: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
