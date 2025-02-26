@@ -14,7 +14,7 @@ class Command(BaseCommand):
     help = "Загружает данные из эксель в модель"
 
     def add_arguments(self, parser):
-        parser.add_argument('file_path', type=str, help="C:/Users/NBKR/yield_db.xlsx")
+        parser.add_argument('file_path', type=str, help="C:/Users/NBKR/yield_db2.xlsx")
 
     def handle(self, *args, **kwargs):
         file_path = kwargs['file_path']

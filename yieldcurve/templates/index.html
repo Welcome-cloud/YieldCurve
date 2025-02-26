@@ -9,29 +9,34 @@
     <link rel="stylesheet" href="/static/flatpickr/dist/flatpickr.min.css">
     <script src="/static/flatpickr/dist/flatpickr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Inter", sans-serif;
             background-color: white;
             color: black;
-            text-align: center;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
 
         }
         header {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
+            width: 100%;
         }
         .header-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
         .bank-name {
             text-align: right;
-            font-family: Arial, sans-serif;
+            font-family: "Inter", sans-serif;
             font-size: 14px;
             line-height: 1.5;
         }
@@ -43,27 +48,107 @@
             height: auto;
             vertical-align: middle;
         }
-        .container {
+        h2 {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content {
             display: flex;
-            justify-content: flex-start;
-            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 2100px;
             gap: 10px;
-            margin-top: 20px;
-            padding: 10px;
+            margin: auto;
+            align-items: flex-start;
+            flex-wrap: nowrap;
         }
-        .calendar-container p {
-            margin: 0;
+        .left-section {
+            display: flex;
+            width: 1600px;
         }
+        .calendar-container {
+            width: 20%;
+            text-align: center;
+            margin-left: 90px;
+        }
+
         .graph-container {
             flex: 1;
-            margin: 0;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            width: 75%;
+            height: auto;
+            max-width: 1000px;
+            min-width: 600px;
+            gap: 0;
+            padding: 0;
+            margin-top: -40px;
+            margin-left: 70px;
         }
-        #calendar {
-            width: auto;
-        }
+
         #graph {
-            width: 800px;
             height: 500px;
+            width: 800px;
+            flex-grow: 0;
+            margin: 0;
+            padding: 0;
+        }
+        .right-section {
+            flex: 0 0 500px;
+            max-width: 500px;
+            text-align: center;
+            margin-right: 100px;
+            margin-top: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100%;
+        }
+        .content .graph-container {
+            margin-right: 0;
+        }
+
+        .info-box {
+            margin-bottom: 15px;
+        }
+        .info-box summary {
+            font-weight: bold;
+            font-family: "Inter", sans-serif;
+            background-color: transparent;
+            color: black;
+            padding: 12px;
+            border-radius: 0;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            font-size: 18px;
+            transition: transform 0.2s ease-in-out, font-size 0.2s ease-in-out;
+        }
+        .info-box summary:hover {
+            transform: scale(1.1);
+            font-size: 20px;
+        }
+        .info-box p {
+            background-color: white;
+            padding: 10px;
+            border-radius: 0;
+            margin-top: 5px;
+        }
+        .controls {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            margin-top: 0;
+            padding: 0;
+            position: relative;
         }
         .controls button {
             background-color: #007BFF;
@@ -86,6 +171,54 @@
             background-color: #003f7f;
             transform: scale(0.95);
         }
+        @media (max-width: 1400px) {
+            .content {
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+            }
+            .calendar-container {
+                flex: 0 0 250px;
+                max-width: 250px;
+                text-align: center;
+            }
+
+            .graph-container {
+                flex: 1 1 auto;
+                max-width: 900px;
+            }
+            .right-section {
+                flex: 1 1 100%;
+                max-width: 100%;
+                margin-top: 20px;
+                text-align: center;
+            }
+        }
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column !important;
+                align-items: center;
+            }
+            .calendar-container {
+                order: -1;
+            }
+            .graph-container {
+                order: 0;
+            }
+            .right-section {
+                order: 1;
+            }
+            .calendar-container,
+            .graph-container,
+            .right-section {
+                width: 100% !important;
+                text-align: center;
+                max-width: 100% !important;
+            }
+            .graph-container {
+                min-width: 100%;
+            }
+        }
 
     </style>
 </head>
@@ -97,24 +230,52 @@
                 <p>КЫРГЫЗСКОЙ РЕСПУБЛИКИ</p>
             </div>
             <div class="logo">
-                <img src="{%  static 'images/logo.png' %}" alt="Логотип банка">
+                <img src="{%  static 'images/logo.png' %}?v=2" alt="Логотип банка">
             </div>
         </div>
     </header>
-    <main>
-        <h2>Кривая доходности финансовой системы Кыргызской Республики</h2>
-        <div class="container">
+    <h2>Кривая доходности ценных бумаг Кыргызской Республики</h2>
+    <main class="content">
+        <div class="left-section">
             <div class="calendar-container">
-              <p>Выберите дату:</p>
-            <div id="calendar"></div>
+                <p>Выберите дату:</p>
+                <div id="calendar"></div>
+            </div>
+            <div class="graph-container">
+                <div id="graph"></div>
+                <div class="controls">
+                    <button onclick="clearGraph()">Очистить график</button>
+                </div>
+            </div>
+         </div>
+
+
+        <div class="right-section">
+            <div class="info-box">
+                <details>
+                    <summary>Кривая доходности: что это и зачем она нужна</summary>
+                    <p>Кривая доходности - это визуальное представление временной структуры процентных ставок, показывающее взаимосвязь между ценами и сроками погашения ценных бумаг в национальной валюте. Она даёт представление о том, насколько выгодно занимать или инвестировать на разные сроки.  </p>
+                </details>
+            </div>
+            <div class="info-box">
+                <details>
+                    <summary>Для кого кривая доходности важна?</summary>
+                    <p>Для коммерческих банков и инвесторов кривая доходности помогает оценивать стоимость денег во времени, прогнозировать процентные ставки и принимать решения о кредитовании, инвестировании и управлении активами</p>
+                </details>
+            </div>
+            <div class="info-box">
+                <details>
+                    <summary>Как интерпретировать график?</summary>
+                    <p>Восходящая кривая означает, что деньги на долгий срок стоят дороже, ожидая роста экономики. Плоская кривая означает, что рынок в неопределености. Инвертированная - участники рынка готовятся к возможному снижению ставок.</p>
+                </details>
+            </div>
+            <div class="info-box">
+                <details>
+                    <summary>Какие данные используются?</summary>
+                    <p>Ноты НБКР, государственные казначейские векселя и облигации Минфина КР</p>
+                </details>
+            </div>
         </div>
-        <div class="graph-container">
-            <div id="graph"></div>
-        </div>
-    </div>
-    <div class="controls">
-        <button onclick="clearGraph()">Очистить график</button>
-    </div>
     </main>
 
 
@@ -127,7 +288,9 @@
             defaultDate: new Date().toISOString().split('T')[0],
             enable: [
                 function(date) {
-                    return date.getDay() === 2;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                return date.getDay() === 2 && date <= today;
                 }
             ],
             inline: true,
@@ -153,14 +316,41 @@
                   .then(response => response.json())
                   .then(data => {
                       console.log("Ответ сервера:", data);
+
                       if (data.error) {
-                          alert(data.error);
-                      } else {
-                          traces = [];
-                          traces = data.data;
-                          Plotly.react('graph', traces, data.layout);
+                          alert("Ошибка от сервера: " + data.error);
+                          return;
                       }
+                      if (!data.data || !Array.isArray(data.data)) {
+                          console.error("Ошибка: data.data не является массивом!", data);
+                          document.getElementById('graph').innerText = "Ошибка: данные некорректны.";
+                          return;
+                      }
+
+                      traces = data.data;
+                      let layout = data.layout;
+
+                      let emptyData = traces.map((trace, i) => ({
+                          x: [],
+                          y: [],
+                          mode: 'lines+markers',
+                          name: selectedDates[i]
+                      }));
+
+                      Plotly.react('graph', emptyData, layout);
+
+                      traces.forEach((trace, traceIndex) => {
+                         trace.x.forEach((_, pointIndex) => {
+                             setTimeout(() => {
+                                 Plotly.extendTraces('graph', {
+                                     x: [[trace.x[pointIndex]]],
+                                     y: [[trace.y[pointIndex]]]
+                                 }, [traceIndex]);
+                             }, pointIndex * 200);
+                         });
+                     });
                   })
+
                   .catch(error => {
                     console.error("Ошибка при загрузке данных:", error);
                     document.getElementById('graph').innerText = "Ошибка при загрузке графика.";
@@ -169,10 +359,50 @@
         function clearGraph() {
             selectedDates = [];
             traces = [];
-            Plotly.react('graph', traces, {});
-            "document.getElementById('graph').innerHTML = '';"
+            Plotly.react('graph', [], {
+                xaxis: {title: "Срок до погашения"},
+                yaxis: {title: "Доходность (%)"}
+            });
+            console.log("График очищен, выберите новые даты")
         }
 
+        function initializeEmptyGraph() {
+            let layout = {
+                xaxis: {
+                    title: "Срок до погашения",
+                    showgrid:true,
+                    zeroline: false
+                },
+                yaxis: {
+                    title: "Доходность (%)",
+                    showgrid:true,
+                    zeroline: false
+                },
+            };
+
+            let emptyTrace = {
+                x: [],
+                y: [],
+                mode: 'lines+markers',
+                marker: { color: 'rgba(0,0,255,0.5)' },
+            };
+
+            Plotly.newPlot('graph', [emptyTrace], layout);
+        }
+
+        window.onload = initializeEmptyGraph;
+    </script>
+    <script>
+        function fixLayout() {
+            document.body.style.display = 'none';
+            setTimeout(() => {
+                document.body.style.display = 'block';
+                console.log("Перерисовка завершена")
+                }, 50);
+        }
+
+        document.addEventListener("DOMContentLoaded", fixLayout);
+        window.addEventListener('resize', fixLayout);
     </script>
 </body>
 </html>

@@ -3,8 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import plotly.graph_objects as go
 from yieldcurve.models import YieldCurve
-from scipy.interpolate import make_interp_spline
-import numpy as np
+
 
 def index(request):
 
@@ -19,10 +18,6 @@ def yield_curve_by_date(request):
 
         print(f"Полученные даты: {dates}")
 
-        #return JsonResponse({"success": "Даты обработаны", "dates": dates})
-    #except Exception as e:
-        #print(f"Ошибка: {e}")
-        #return JsonResponse({"error": str(e)}, status=500)
 
         fig = go.Figure()
         for date in dates:
@@ -55,12 +50,6 @@ def yield_curve_by_date(request):
                 continue
         #fig.add_trace(go.Scatter(x=x_new, y=y_smooth, mode='lines', name='Smoothed Curve'))
         fig.update_layout(
-            title = {
-                'text': f"Кривая доходности на {date}",
-                'font': {'family': "Arial, sans-serif", 'size': 16, 'color': 'black'},
-                'x': 0.5,
-                'y': 0.85
-            },
             xaxis_title="Срок до погашения",
             yaxis_title="Доходность (%)",
             template="plotly_white",
