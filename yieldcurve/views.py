@@ -10,8 +10,6 @@ def index(request):
 
     return render(request, "index.html")
 
-#def index(request):
-    #return HttpResponse("Hello, Django is working!")
 
 def yield_curve_by_date(request):
     try:
