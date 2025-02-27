@@ -1,6 +1,7 @@
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.http import HttpResponse
 import plotly.graph_objects as go
 from yieldcurve.models import YieldCurve
 
@@ -8,6 +9,9 @@ from yieldcurve.models import YieldCurve
 def index(request):
 
     return render(request, "index.html")
+
+#def index(request):
+    #return HttpResponse("Hello, Django is working!")
 
 def yield_curve_by_date(request):
     try:

@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#pgj1dfih!7uwihev6cahj0!cy!_0@dmv+5kzly7ovse15xe%!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['.ngrok-free.app', '127.0.0.1', 'localhost', "Welcomecloud.pythonanywhere.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -53,11 +53,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'YieldCurveProject.urls'
 
+#from pathlib import Path
+
+#BASE_DIR = Path(__file__).resolve().parent.parent
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,8 +130,6 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -136,8 +139,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "YieldCurveProject", "node_modules"),
+    BASE_DIR / "static",
 ]
 
 LOGGING = {
