@@ -141,7 +141,7 @@ MEDIA_ROOT = '/home/welcomecloud/yieldcurve/media'
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "YieldCurveProject/static"),
 ]
 
 LOGGING = {
